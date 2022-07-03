@@ -12,7 +12,7 @@ En este modo el jugador debe pensar una palabra de 5 letras y la computadora adi
 
 ### ¿Cómo jugar Wordle?
 El juego puede iniciarse con una llamada en consola, introduciendo el modo de juego como un argumento. 
-#### Para Linux
+#### Para Windows
 Se debe correr el archivo hmake.bat que crea un archivo ejecutable Wordle.exe. El archivo bat puede abrirse al darle doble click o desde la consola:
 
     .\hmake.bat
