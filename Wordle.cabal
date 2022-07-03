@@ -57,7 +57,7 @@ library
   hs-source-dirs:
     src
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.12
     , random
     , containers
   default-language: Haskell2010
@@ -76,7 +76,7 @@ executable Wordle
   -- Other library packages from which modules are imported.
   build-depends:       
       Wordle
-    , base >=4.12 && <4.13
+    , base >=4.12
     , random
     , containers
 
