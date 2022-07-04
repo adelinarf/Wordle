@@ -10,7 +10,8 @@ Portability : POSIX
 
 Este modulo cuenta con las funciones 'revisar', 'stringAOpciones', 'mapearAOpciones', 'valorPalabra', 'conseguirValor', 
 'valorPosibilidad', 'conseguirValorPosible', 'palabrasAUsar', 'conseguirPosibilidades', 'posibilidadAUsar', 'crearArbol', 
-'crearHijosPalabras', 'crearHijosPosibilidades', 'recorrerArbol', 'recorrido', 'recorre', 'conseguirPalabras' y 'palabraEncontrada'.
+'crearHijosPalabras', 'crearHijosPosibilidades', 'recorrerArbol', 'recorrido', 'recorre', 'conseguirPalabras','palabraEncontrada'.
+y 'conseguirW'.
 La funciones 'revisar', 'stringAOpciones', 'mapearAOpciones', 'valorPalabra', 'conseguirValor', 
 'valorPosibilidad', 'conseguirValorPosible', 'palabrasAUsar', 'conseguirPosibilidades' y 'posibilidadAUsar' son funciones auxiliares
 que se utilizan para la creacion del arbol. 
