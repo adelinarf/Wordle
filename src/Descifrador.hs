@@ -28,7 +28,7 @@ module Descifrador
    Arbol(Empty,Nodo)
   ,stringAOpciones
   ,crearArbol
-  ,palabraEncontrada , revisar
+  ,palabraEncontrada
   ) where
 
 import MenteMaestra ( Opciones(Toro,Vaca,Vacio), conseguir )

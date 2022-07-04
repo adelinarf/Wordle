@@ -22,7 +22,7 @@ module Main where
 
 import MenteMaestra ( Opciones(Toro,Vaca,Vacio), conseguir )
 
-import Descifrador  ( Arbol(Empty,Nodo),stringAOpciones,crearArbol,palabraEncontrada ,revisar)
+import Descifrador  ( Arbol(Empty,Nodo),stringAOpciones,crearArbol,palabraEncontrada)
 
 import Data.Map ( fromListWith, Map )
 import qualified Data.Map as Map
