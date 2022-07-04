@@ -28,7 +28,7 @@ module Descifrador
    Arbol(Empty,Nodo)
   ,stringAOpciones
   ,crearArbol
-  ,palabraEncontrada 
+  ,palabraEncontrada , revisar
   ) where
 
 import MenteMaestra ( Opciones(Toro,Vaca,Vacio), conseguir )
@@ -59,7 +59,7 @@ data Arbol a b c
 revisar :: [String] -> String -> [Opciones] -> [String]
 revisar [] palabra guess = []
 revisar (x:xs) palabra guess = 
-                         if conseguir palabra x == guess
+                         if (conseguir x palabra) == guess
                             then [x] ++ revisar xs palabra guess
                          else
                             revisar xs palabra guess
@@ -236,9 +236,20 @@ conseguirPalabras ((Nodo palabra opciones valor arbolHijo):xs) = [palabra] ++ co
 
 {-|
   La funcion 'palabraEncontrada' retorna '[(String,Float)]'. Recorre el arbol y toma la palabra del primer nivel de menor valor.
-  Toma un argumento de tipo 'Arbol String [Opciones] Float'.
+  Llama a la funcion conseguirW para conseguir la palabra de menor valor que no haya sido utilizada antes, para evitar la repeticion
+  de palabras.
+  Toma dos argumentos de tipo 'Arbol String [Opciones] Float' y '[String]'.
 -}
-palabraEncontrada :: Arbol String [Opciones] Float -> [(String,Float)]
-palabraEncontrada arbol = Prelude.take 1 $ sortBy (comparing $ snd) (recorrerArbol arbol)
-
-
+palabraEncontrada :: Arbol String [Opciones] Float -> [String] -> [(String,Float)]
+palabraEncontrada arbol palabrasGeneradas = conseguirW $ sortBy (comparing $ snd) (recorrerArbol arbol)
+    where
+        {-|
+          La funcion 'palabraEncontrada' retorna '[(String,Float)]'. Itera sobre la lista de tuplas que recibe para encontrar
+          a la palabra de menor valor que no se encuentra en la lista de palabrasGeneradas anteriormente por el programa.
+          Toma un argumento de tipo '[(String,Float)]'.
+        -}
+        conseguirW :: [(String,Float)] -> [(String,Float)]
+        conseguirW [] = []
+        conseguirW (x:xs)
+                        | (((fst x) `elem` palabrasGeneradas) == True) = conseguirW xs
+                        | (((fst x) `elem` palabrasGeneradas) == False)= [x]

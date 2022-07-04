@@ -22,7 +22,7 @@ module Main where
 
 import MenteMaestra ( Opciones(Toro,Vaca,Vacio), conseguir )
 
-import Descifrador  ( Arbol(Empty,Nodo),stringAOpciones,crearArbol,palabraEncontrada )
+import Descifrador  ( Arbol(Empty,Nodo),stringAOpciones,crearArbol,palabraEncontrada ,revisar)
 
 import Data.Map ( fromListWith, Map )
 import qualified Data.Map as Map
@@ -164,7 +164,7 @@ modo2Init = do
     listaPalabras <- palabras
     i <- randomRIO (0, length listaPalabras - 1)
     let target = listaPalabras !! i 
-    modo2 listaPalabras target 6
+    modo2 listaPalabras target 6 [] "" [target]
 
 {-|
   La funcion 'modo2' retorna un 'I0 ()'. Toma una lista de palabras, una palabra objetivo y la cantidad de vidas o oportunidades. 
@@ -173,10 +173,11 @@ modo2Init = do
   y si se compone de Toros unicamente, se acaba el juego y gana la computadora. Si no, se validan los datos con la funcion 'validarE'.
   Una vez se acaben las oportunidades o se introduzca "TTTTT" se acaba el juego. Si se introduce un valor invalido, se muestra un error
   en consola y se llama de nuevo a esta funcion. 
-  Toma tres argumentos de tipo '[String]', 'String' y 'Int'.
+  El argumento palabrasGeneradas aloja las palabras que ha generado la computadora al intentar adivinar, para evitar repeticiones.
+  Toma seis argumentos de tipo '[String]', 'String', 'Int', '[Opciones]', 'String' y '[String]'.
 -}
-modo2 :: [String] -> String -> Int -> IO ()
-modo2 listaPalabras target vidas
+modo2 :: [String] -> String -> Int -> [Opciones] -> String -> [String] -> IO ()
+modo2 listaPalabras target vidas guessAnterior palabraAnterior palabrasGeneradas
     | vidas == 0 = modo2End 2
     | otherwise = do
         putStr ("DESCIFRADOR  : " ++ target ++ "\n")
@@ -187,34 +188,87 @@ modo2 listaPalabras target vidas
         if (all (\x -> x `elem` ['T','V','-']) input) == False || length input /= 5
             then do 
                 putStrLn "Entrada invalida : La entrada solo debe contener, V, T y -"
-                modo2 listaPalabras target vidas
+                modo2 listaPalabras target vidas guessAnterior palabraAnterior palabrasGeneradas
         else do
             let guess = Prelude.map stringAOpciones input
             if guess == [Toro,Toro,Toro,Toro,Toro]
                 then modo2End 3
             else do
-                validarE guess listaPalabras target vidas
+                validarE guess listaPalabras target vidas guessAnterior palabraAnterior palabrasGeneradas
         
 {-|
   La funcion 'validarE' retorna un 'I0 ()'. Toma una lista de 'Opciones' y verifica su tamano. Si es de tamano 5, se crea un arbol
   y se busca la palabra de menor valor con la funcion 'palabraEncontrada', si el resultado es no vacio, entonces existe la palabra
   y se llama de nuevo a 'modo2' con esta palabra, si es vacia no existen mas opciones para la lista de 'Opciones' dadas y el jugador
-  ha hecho trampa, ya que la palabra no existe en la lista de palabras.
-  Toma cuatro argumentos de tipo '[Opciones]', '[String]', 'String' y 'Int'.
+  ha hecho trampa, ya que la palabra no existe en la lista de palabras o ha cambiado la posicion de algun Toro o Vaca.
+  La lista de 'String' de palabrasGeneradas se utiliza para evitar repeticiones al encontrar una nueva palabra y se actualiza al llamar
+  de nuevo a la funcion 'modo2'.
+  Toma seis argumentos de tipo '[Opciones]', '[String]', 'String', 'Int', '[Opciones]' y 'String'.
 -}
-validarE :: [Opciones] -> [String] -> String -> Int -> IO ()
-validarE guess listaPalabras palabra vidas
+validarE :: [Opciones] -> [String] -> String -> Int -> [Opciones] -> String -> [String] -> IO ()
+validarE guess listaPalabras palabra vidas guessAnterior palabraAnterior palabrasGeneradas
     | length guess /= 5 = do
         putStrLn "Entrada invalida"
-        modo2 listaPalabras palabra vidas
+        modo2 listaPalabras palabra vidas guessAnterior palabraAnterior palabrasGeneradas
     | otherwise = do
         let arbol = crearArbol guess palabra listaPalabras
-        let tupla = palabraEncontrada arbol
-        if length tupla == 0 
+        let tupla = palabraEncontrada arbol palabrasGeneradas
+        if length tupla == 0 || (checkGuess guess guessAnterior palabra palabraAnterior == True)
            then modo2End 1
         else do
-           modo2 listaPalabras (fst (tupla !! 0)) (vidas-1)
-
+           modo2 listaPalabras (fst (tupla !! 0)) (vidas-1) guess palabra (palabrasGeneradas++[(fst (tupla !! 0))])
+{-|
+  La funcion 'buscarToros' retorna un 'Char'. Toma un tipo 'Opciones' y retorna T si es Toro, V si es Vaca y - si es Vacio.
+  Toma un argumento de tipo 'Opciones'.
+-}
+buscarToros :: Opciones -> Char
+buscarToros op
+              | op == Toro = 'T'
+              | op == Vaca = 'V'
+              | otherwise = '-'
+{-|
+  La funcion 'checkGuess' retorna un 'Bool'. Toma dos listas de 'Opciones' y dos 'String'. Verifica si la palabra anterior es vacia,
+  entonces no se encuentra ninguna alojada porque es la primera ronda dl juego. Si no es vacia, se buscan los toros en la lista de 
+  'Opciones' y se crea una lista de tuplas con zip que empareja a la letra con su valor en el tipo 'Opciones'. Como se guardan como 'Char'
+  se hace uso de la funcion 'compareChars' para verificar si es cierto o falso el valor del usuario, ya que se conoce la entrada anterior.
+  Esta funcion previene que el jugador haga trampa y solo retorna 'True'. Cuando el jugador introduzca una combinacion de T,V,- que tenga
+  sentido con las que ha colocado anteriormente.
+  Toma cuatro argumentos de tipo '[Opciones]','[Opciones]','String' y 'String'.
+-}
+checkGuess :: [Opciones] -> [Opciones] -> String -> String -> Bool
+checkGuess actual anterior palabra palabraAnterior = 
+                         if anterior == []
+                             then False
+                         else do
+                             let act = zip (map buscarToros actual) palabra
+                             let ant = zip (map buscarToros anterior) palabraAnterior
+                             if (compareChars act ant) == True
+                                 then True
+                             else 
+                                 False
+    where
+        {-|
+           La funcion 'compareChars' retorna un 'Bool'. Toma dos listas de '(Char,Char)' y analiza cada uno de sus elementos
+           con la funcion 'comparacionC' y luego consigue el valor de todos con la funcion 'and'.
+           Toma dos argumentos de tipo '[(Char,Char)]'.
+        -}
+        compareChars :: [(Char,Char)] -> [(Char,Char)] -> Bool
+        compareChars actual anterior = and (zipWith comparacionC actual anterior)
+        {-|
+           La funcion 'comparacionC' retorna un 'Bool'. Toma '(Char,Char)' y analiza los primeros y segundos elementos de cada tupla.
+           Los primeros elementos son 'V','T' o '-' dependiendo de lo que introduce el usuario. Y los segundos elementos de la tupla
+           son las letras, si son diferentes y los primeros elementos son iguales, el jugador trata de hacer trampa. Ademas se verifican
+           el resto de los casos. Retorna 'True' si el jugador intenta hacer trampa y 'False' si no.
+           Toma dos argumentos de tipo '(Char,Char)'.
+        -}
+        comparacionC :: (Char,Char) -> (Char,Char) -> Bool
+        comparacionC tupla1 tupla2
+                            | (fst tupla1 == fst tupla2) && (fst tupla1 == '-') && (snd tupla1 /= snd tupla2) = False
+                            | (fst tupla1 == fst tupla2) && (fst tupla1 == 'V' || fst tupla1 == 'T') && (snd tupla1 == snd tupla2) = False
+                            | (fst tupla1 == fst tupla2) && (fst tupla1 == 'V' || fst tupla1 == 'T') && (snd tupla1 /= snd tupla2) = True
+                            | (fst tupla1 /= fst tupla2) && (snd tupla1 /= snd tupla2) = False
+                            | (fst tupla1 /= fst tupla2) && (snd tupla1 == snd tupla2) = True
+                            | otherwise = False                             
 {-|
   La funcion 'main' retorna un 'I0 ()'. Es la funcion principal que reciba las entradas por consola y llama a cada uno de los modos
   de juego. Si no se introduce un argumento o si el argumento es invalido, imprime un error. Sino, llama a la funcion 'modo1Init' o 
