@@ -11,8 +11,8 @@ El jugador tiene 6 oportunidades para adivinar la palabra correcta, sino se term
 En este modo el jugador debe pensar una palabra de 5 letras y la computadora adivinará dicha palabra. La computadora dará opciones de palabras y es el jugador quien debe indicar cuales son toros, vacas y -. En caso de no adivinar la palabra, el jugador gana, pero si la computadora adivina la palabra o el jugador hace trampa, el jugador pierde.
 
 ### ¿Cómo jugar Wordle?
-El juego puede iniciarse con una llamada en consola, introduciendo el modo de juego como un argumento. 
-#### Para Windows
+El juego puede iniciarse con una llamada en consola, introduciendo el modo de juego como un argumento. Para la corrida de este juego, se requiere de Cabal. Las descargas de Cabal pueden encontrarse en: https://www.haskell.org/cabal/download.html
+#### Para Windows 
 Se debe correr el archivo hmake.bat que crea un archivo ejecutable Wordle.exe. El archivo bat puede abrirse al darle doble click o desde la consola:
 
     .\hmake.bat
