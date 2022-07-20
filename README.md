@@ -12,7 +12,10 @@ En este modo el jugador debe pensar una palabra de 5 letras y la computadora adi
 
 ### ¿Cómo jugar Wordle?
 El juego puede iniciarse con una llamada en consola, introduciendo el modo de juego como un argumento. Para la corrida de este juego, se requiere de Cabal. Las descargas de Cabal pueden encontrarse en: https://www.haskell.org/cabal/download.html. Para Windows es recomendable el archivo .exe, el cual puede incluirse directamente en la carpeta de este proyecto.
-Una vez descargado Cabal realizar el comando:
+
+<img src="cabal.png" alt="directorio"/>
+
+Una vez descargado Cabal realizar el siguiente comando desde una consola abierta en el directorio en el que se han guardado el proyecto y el archivo exe de Cabal:
     
         cabal update
         
