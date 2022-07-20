@@ -33,3 +33,5 @@ Luego en el mismo directorio de Wordle.exe se debe correr el archivo con el modo
 
 #### Para Linux
 Se debe correr el archivo hmake.sh que crea un archivo ejecutable. Y luego se debe ejecutar este archivo llamado Wordle que genera.
+
+##### El informe del proyecto se encuenra en el archivo Proyecto_1_Wordle.pdf
