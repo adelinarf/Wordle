@@ -22,11 +22,11 @@ Una vez descargado Cabal realizar el siguiente comando desde una consola abierta
  Que descargará la versión más reciente de Cabal y permitirá correr el juego.
 
 #### Para Windows 
-Se debe correr el archivo hmake.bat que crea un archivo ejecutable Wordle.exe. El archivo bat puede abrirse desde la consola como:
+Se debe correr el archivo hmake.bat desde la consola abierta en el directorio del proyecto que crea un archivo ejecutable Wordle.exe. El archivo bat puede abrirse desde la consola como:
 
     .\hmake.bat
 
-Luego se debe correr el archivo con el modo deseado:
+Luego en el mismo directorio de Wordle.exe se debe correr el archivo con el modo deseado:
 
     .\Wordle.exe descifrador
     .\Wordle.exe mentemaestra
